@@ -1,12 +1,28 @@
 'use client';
 
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import Image from 'next/image';
 
 // Types for the component
 interface DockApp {
   id: string;
   name: string;
   icon: string;
+}
+
+interface GSAPInstance {
+  to: (target: HTMLElement | null, options: {
+    y: number;
+    duration: number;
+    ease: string;
+    yoyo: boolean;
+    repeat: number;
+    transformOrigin: string;
+  }) => void;
+}
+
+interface WindowWithGSAP extends Window {
+  gsap?: GSAPInstance;
 }
 
 interface MacOSDockProps {
@@ -154,19 +170,19 @@ const MacOSDock: React.FC<MacOSDockProps> = ({
   }, []);
 
   const createBounceAnimation = (element: HTMLElement) => {
-    const bounceHeight = Math.max(-8, -baseIconSize * 0.15);
-    element.style.transition = 'transform 0.2s ease-out';
-    element.style.transform = `translateY(${bounceHeight}px)`;
+    // Add bounce class for CSS animation
+    element.classList.add('dock-icon-bounce');
     
+    // Remove class after animation completes
     setTimeout(() => {
-      element.style.transform = 'translateY(0px)';
-    }, 200);
+      element.classList.remove('dock-icon-bounce');
+    }, 400);
   };
 
   const handleAppClick = (appId: string, index: number) => {
     if (iconRefs.current[index]) {
-      if (typeof window !== 'undefined' && (window as any).gsap) {
-        const gsap = (window as any).gsap;
+      if (typeof window !== 'undefined' && (window as WindowWithGSAP).gsap) {
+        const gsap = (window as WindowWithGSAP).gsap!;
         const bounceHeight = currentScales[index] > 1.3 ? -baseIconSize * 0.2 : -baseIconSize * 0.15;
         
         gsap.to(iconRefs.current[index], {
@@ -198,17 +214,30 @@ const MacOSDock: React.FC<MacOSDockProps> = ({
   if (!isClient) {
     return (
       <div 
-        className={`backdrop-blur-md ${className}`}
+        className={`backdrop-blur-xl ${className}`}
         style={{
           width: `${(apps.length * (baseIconSize + baseSpacing)) - baseSpacing + padding * 2}px`,
-          background: 'rgba(45, 45, 45, 0.75)',
+          background: `
+            linear-gradient(135deg, 
+              rgba(255, 255, 255, 0.15) 0%, 
+              rgba(255, 255, 255, 0.05) 25%, 
+              rgba(255, 255, 255, 0.02) 50%, 
+              rgba(255, 255, 255, 0.05) 75%, 
+              rgba(255, 255, 255, 0.1) 100%
+            ),
+            radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.2), transparent 40%),
+            radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.15), transparent 40%),
+            rgba(255, 255, 255, 0.03)
+          `,
           borderRadius: `${Math.max(12, baseIconSize * 0.4)}px`,
-          border: '1px solid rgba(255, 255, 255, 0.15)',
+          border: '1px solid rgba(255, 255, 255, 0.3)',
           boxShadow: `
-            0 ${Math.max(4, baseIconSize * 0.1)}px ${Math.max(16, baseIconSize * 0.4)}px rgba(0, 0, 0, 0.4),
-            0 ${Math.max(2, baseIconSize * 0.05)}px ${Math.max(8, baseIconSize * 0.2)}px rgba(0, 0, 0, 0.3),
-            inset 0 1px 0 rgba(255, 255, 255, 0.15),
-            inset 0 -1px 0 rgba(0, 0, 0, 0.2)
+            0 ${Math.max(4, baseIconSize * 0.1)}px ${Math.max(16, baseIconSize * 0.4)}px rgba(0, 0, 0, 0.3),
+            0 ${Math.max(2, baseIconSize * 0.05)}px ${Math.max(8, baseIconSize * 0.2)}px rgba(0, 0, 0, 0.2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.4),
+            inset 0 -1px 0 rgba(255, 255, 255, 0.1),
+            inset 1px 0 0 rgba(255, 255, 255, 0.2),
+            inset -1px 0 0 rgba(255, 255, 255, 0.2)
           `,
           padding: `${padding}px`
         }}
@@ -233,7 +262,7 @@ const MacOSDock: React.FC<MacOSDockProps> = ({
                 transformOrigin: 'bottom center'
               }}
             >
-              <img
+              <Image
                 src={app.icon}
                 alt={app.name}
                 width={baseIconSize}
@@ -270,17 +299,30 @@ const MacOSDock: React.FC<MacOSDockProps> = ({
   return (
     <div 
       ref={dockRef}
-      className={`backdrop-blur-md ${className}`}
+      className={`backdrop-blur-xl ${className}`}
       style={{
         width: `${contentWidth + padding * 2}px`,
-        background: 'rgba(45, 45, 45, 0.75)',
+        background: `
+          linear-gradient(135deg, 
+            rgba(255, 255, 255, 0.15) 0%, 
+            rgba(255, 255, 255, 0.05) 25%, 
+            rgba(255, 255, 255, 0.02) 50%, 
+            rgba(255, 255, 255, 0.05) 75%, 
+            rgba(255, 255, 255, 0.1) 100%
+          ),
+          radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.2), transparent 40%),
+          radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.15), transparent 40%),
+          rgba(255, 255, 255, 0.03)
+        `,
         borderRadius: `${Math.max(12, baseIconSize * 0.4)}px`,
-        border: '1px solid rgba(255, 255, 255, 0.15)',
+        border: '1px solid rgba(255, 255, 255, 0.3)',
         boxShadow: `
-          0 ${Math.max(4, baseIconSize * 0.1)}px ${Math.max(16, baseIconSize * 0.4)}px rgba(0, 0, 0, 0.4),
-          0 ${Math.max(2, baseIconSize * 0.05)}px ${Math.max(8, baseIconSize * 0.2)}px rgba(0, 0, 0, 0.3),
-          inset 0 1px 0 rgba(255, 255, 255, 0.15),
-          inset 0 -1px 0 rgba(0, 0, 0, 0.2)
+          0 ${Math.max(4, baseIconSize * 0.1)}px ${Math.max(16, baseIconSize * 0.4)}px rgba(0, 0, 0, 0.3),
+          0 ${Math.max(2, baseIconSize * 0.05)}px ${Math.max(8, baseIconSize * 0.2)}px rgba(0, 0, 0, 0.2),
+          inset 0 1px 0 rgba(255, 255, 255, 0.4),
+          inset 0 -1px 0 rgba(255, 255, 255, 0.1),
+          inset 1px 0 0 rgba(255, 255, 255, 0.2),
+          inset -1px 0 0 rgba(255, 255, 255, 0.2)
         `,
         padding: `${padding}px`
       }}
@@ -315,7 +357,7 @@ const MacOSDock: React.FC<MacOSDockProps> = ({
                 zIndex: Math.round(scale * 10)
               }}
             >
-              <img
+              <Image
                 src={app.icon}
                 alt={app.name}
                 width={scaledSize}

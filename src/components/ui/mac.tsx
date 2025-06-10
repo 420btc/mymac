@@ -109,11 +109,11 @@ export function Mac({ width = 600, height = 500, src, ...props }: MacProps) {
         y2="401.32"
         gradientUnits="userSpaceOnUse"
       >
-        <stop offset="0" stop-color="#a7a9ac" />
-        <stop offset=".1" stop-color="#d1d3d4" />
-        <stop offset=".41" stop-color="#e6e7e8" />
-        <stop offset=".73" stop-color="#e6e7e8" />
-        <stop offset="1" stop-color="#d1d3d4" />
+        <stop offset="0" stopColor="#a7a9ac" />
+                <stop offset=".1" stopColor="#d1d3d4" />
+                <stop offset=".41" stopColor="#e6e7e8" />
+                <stop offset=".73" stopColor="#e6e7e8" />
+                <stop offset="1" stopColor="#d1d3d4" />
       </linearGradient>
     </svg>
   )

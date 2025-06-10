@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import MacOSDock from '../components/mac-os-dock';
 import { Mac } from '../components/ui/mac';
+import WindowManager from '../components/window-manager';
 
 // Sample app data with actual macOS-style icons
 const sampleApps = [
@@ -54,17 +55,21 @@ const sampleApps = [
 ];
 
 const DockDemo: React.FC = () => {
-  const [openApps, setOpenApps] = useState<string[]>(['finder', 'safari']);
+  const [openApps, setOpenApps] = useState<string[]>([]);
 
   const handleAppClick = (appId: string) => {
     console.log('App clicked:', appId);
     
-    // Toggle app in openApps array
+    // Add app to openApps if not already open
     setOpenApps(prev => 
       prev.includes(appId) 
-        ? prev.filter(id => id !== appId)
+        ? prev // Don't add if already open, just bring to front
         : [...prev, appId]
     );
+  };
+
+  const handleAppClose = (appId: string) => {
+    setOpenApps(prev => prev.filter(id => id !== appId));
   };
 
   return (
@@ -75,29 +80,49 @@ const DockDemo: React.FC = () => {
       alignItems: 'center',
       justifyContent: 'center',
       overflow: 'hidden',
-      backgroundColor: '#ffffff'
+      backgroundColor: '#ffffff',
+      position: 'relative'
     }}>
-      {/* Mac Container with 150% scale */}
+      {/* Mac Container with 180% scale */}
       <div style={{
          position: 'relative',
-         transform: 'scale(1.5)',
+         transform: 'scale(1.8)',
          transformOrigin: 'center center'
        }}>
         {/* Mac SVG Background */}
         <Mac 
           width={600} 
           height={500}
+          src="/diseño1.png"
           style={{
             filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.3))'
           }}
         />
         
-        {/* Dock positioned at the bottom of the Mac screen */}
+        {/* Windows inside Mac screen */}
         <div style={{
           position: 'absolute',
-          bottom: '120px', // Adjusted to position dock at bottom of Mac screen
+          top: '60px', // Start from top of Mac screen
+          left: '60px', // Left margin of Mac screen
+          width: '480px', // Width of Mac screen area
+          height: '300px', // Height of Mac screen area
+          overflow: 'hidden',
+          transform: 'scale(0.6)', // Scale down windows to fit
+          transformOrigin: 'top left'
+        }}>
+          <WindowManager
+            openApps={openApps}
+            onAppClose={handleAppClose}
+            apps={sampleApps}
+          />
+        </div>
+        
+        {/* Dock positioned inside the Mac screen */}
+        <div style={{
+          position: 'absolute',
+          bottom: '175px', // Position dock inside the Mac screen area
           left: '50%',
-          transform: 'translateX(-50%) scale(0.8)', // Scale down dock to fit Mac proportions
+          transform: 'translateX(-50%) scale(0.48)', // Scale down dock to fit inside Mac screen
           transformOrigin: 'center bottom',
           zIndex: 10
         }}>
