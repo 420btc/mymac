@@ -81,7 +81,7 @@ const WindowManager: React.FC<WindowManagerProps> = ({ openApps, onAppClose, app
     
     // Position the window in the upper area of the Mac screen
     const baseX = Math.max(50, (macScreenWidth - windowWidth) / 2);
-    const baseY = Math.max(50, (macScreenHeight - windowHeight) / 2 - 250);
+    const baseY = Math.max(50, (macScreenHeight - windowHeight) / 2 - 300);
     const offset = Object.keys(windows).length * 30; // Smaller offset for better stacking
     
     const newWindow: WindowData = {
