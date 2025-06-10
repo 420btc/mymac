@@ -24,7 +24,7 @@ const MacWindow: React.FC<MacWindowProps> = ({
   onMaximize,
   children,
   initialPosition = { x: 50, y: 50 },
-  initialSize = { width: 600, height: 400 },
+  initialSize = { width: 800, height: 600 },
   zIndex = 1000
 }) => {
   const [position, setPosition] = useState(initialPosition);
@@ -63,12 +63,30 @@ const MacWindow: React.FC<MacWindowProps> = ({
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (isDragging && !isMaximized) {
+      // Calculate the container bounds (Mac screen area)
+      // Based on page.tsx: container is 520px wide, 360px tall, scaled by 0.45
+      const containerWidth = 520 / 0.45; // ~1155px
+      const containerHeight = 360 / 0.45; // ~800px
+      
+      let newX = e.clientX - dragOffset.x;
+      let newY = e.clientY - dragOffset.y;
+      
+      // Restrict movement within container bounds
+      const minX = 0;
+      const minY = 0;
+      const maxX = containerWidth - size.width;
+      const maxY = containerHeight - size.height;
+      
+      // Apply boundaries
+      newX = Math.max(minX, Math.min(maxX, newX));
+      newY = Math.max(minY, Math.min(maxY, newY));
+      
       setPosition({
-        x: e.clientX - dragOffset.x,
-        y: e.clientY - dragOffset.y
+        x: newX,
+        y: newY
       });
     }
-  }, [isDragging, isMaximized, dragOffset.x, dragOffset.y]);
+  }, [isDragging, isMaximized, dragOffset.x, dragOffset.y, size.width, size.height]);
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);

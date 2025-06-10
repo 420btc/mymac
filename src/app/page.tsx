@@ -63,7 +63,7 @@ const DockDemo: React.FC = () => {
     // Add app to openApps if not already open
     setOpenApps(prev => 
       prev.includes(appId) 
-        ? prev // Don't add if already open, just bring to front
+        ? prev // Keep in openApps to allow window manager to handle minimize/restore
         : [...prev, appId]
     );
   };
@@ -102,12 +102,12 @@ const DockDemo: React.FC = () => {
         {/* Windows inside Mac screen */}
         <div style={{
           position: 'absolute',
-          top: '60px', // Start from top of Mac screen
-          left: '60px', // Left margin of Mac screen
-          width: '480px', // Width of Mac screen area
-          height: '300px', // Height of Mac screen area
-          overflow: 'hidden',
-          transform: 'scale(0.6)', // Scale down windows to fit
+          top: '40px', // Start from top of Mac screen
+          left: '40px', // Left margin of Mac screen
+          width: '520px', // Width of Mac screen area
+          height: '360px', // Height of Mac screen area
+          overflow: 'visible',
+          transform: 'scale(0.45)', // Scale down windows to fit
           transformOrigin: 'top left'
         }}>
           <WindowManager
