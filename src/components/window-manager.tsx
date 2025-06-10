@@ -71,13 +71,18 @@ const WindowManager: React.FC<WindowManagerProps> = ({ openApps, onAppClose, app
       throw new Error(`App with id ${appId} not found`);
     }
 
-    // Calculate initial position centered and at the top
+    // Calculate initial position centered within Mac screen area
     const windowWidth = 800;
     const windowHeight = 600;
-    const screenWidth = typeof window !== 'undefined' ? window.innerWidth : 1200;
-    const baseX = Math.max(50, (screenWidth - windowWidth) / 2);
-    const baseY = 50;
-    const offset = Object.keys(windows).length * 40;
+    // Mac screen area is 520px wide, 360px tall, but scaled by 0.45
+    // So effective area is 520/0.45 = ~1155px wide, 360/0.45 = ~800px tall
+    const macScreenWidth = 520 / 0.45;
+    const macScreenHeight = 360 / 0.45;
+    
+    // Center the window within the Mac screen area, positioned 100px higher
+    const baseX = Math.max(50, (macScreenWidth - windowWidth) / 2);
+    const baseY = Math.max(50, (macScreenHeight - windowHeight) / 2 - 200);
+    const offset = Object.keys(windows).length * 30; // Smaller offset for better stacking
     
     const newWindow: WindowData = {
       id: appId,
